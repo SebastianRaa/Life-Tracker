@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Journal Entries</title>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #f3f3f3;
+      }
+      .nav {
+        margin-bottom: 20px;
+      }
+      .nav a {
+        margin-right: 20px;
+        font-size: 18px;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <a href="/">Journal</a>
+      <a href="/entries"><b>Entries</b></a>
+    </div>
+
+    <h1>Letzte Einträge</h1>
+
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>created_at</th>
+        <th>entry_date</th>
+        <th>Reading</th>
+        <th>Exercise</th>
+        <th>No Meat</th>
+        <th>Flossing</th>
+        <th>Health</th>
+        <th>Notes</th>
+      </tr>
+
+      {% for entry in entries %}
+      <tr>
+        <td>{{ entry.id }}</td>
+        <td>{{ entry.created_at }}</td>
+        <td>{{ entry.entry_date }}</td>
+        <td>{{ entry.reading }}</td>
+        <td>{{ entry.exercise }}</td>
+        <td>{{ entry.no_meat }}</td>
+        <td>{{ entry.flossing }}</td>
+        <td>{{ entry.health }}</td>
+        <td>{{ entry.notes }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>

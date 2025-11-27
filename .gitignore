@@ -1,0 +1,6 @@
+# SQLite Datenbank
+tracker.db
+
+# Python Cache-Ordner
+__pycache__/
+*.pyc

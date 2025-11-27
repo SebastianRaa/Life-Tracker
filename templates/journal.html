@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Journal Eintrag</title>
+    <style>
+      .nav {
+        margin-bottom: 20px;
+      }
+      .nav a {
+        margin-right: 20px;
+        font-size: 18px;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <a href="/"><b>Journal</b></a>
+      <a href="/entries">Entries</a>
+    </div>
+    <h1>Journaling</h1>
+
+    <form action="/submit" method="post">
+      <label for="entry_date">Date:</label>
+      <input type="date" id="date" name="entry_date" value="{{ today }}" />
+      <br /><br />
+
+      <label>Reading:</label>
+      <input type="checkbox" name="reading" />
+      <br /><br />
+
+      <label>Exercise:</label>
+      <input type="checkbox" name="exercise" />
+      <br /><br />
+
+      <label>No meat:</label><br />
+      <input type="radio" id="0" name="no_meat" value="0" />
+      <label for="0">0</label><br />
+      <input type="radio" id="1" name="no_meat" value="1" />
+      <label for="1">1</label><br />
+      <input type="radio" id="2" name="no_meat" value="2" />
+      <label for="2">2</label><br />
+      <input type="radio" id="3" name="no_meat" value="3" />
+      <label for="3">3</label><br /><br />
+
+      <label>Flossing:</label>
+      <input type="checkbox" name="flossing" />
+      <br /><br />
+
+      <label>Health:</label><br />
+      <input type="radio" id="good" name="health" value="good" />
+      <label for="good">good</label><br />
+      <input type="radio" id="ok" name="health" value="ok" />
+      <label for="ok">ok</label><br />
+      <input type="radio" id="bad" name="health" value="bad" />
+      <label for="bad">bad</label><br /><br />
+
+      <label>Notes:</label><br />
+      <textarea name="notes" rows="4" cols="40"></textarea>
+      <br /><br />
+
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>
