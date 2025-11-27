@@ -1,66 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
   <head>
-    <title>Journal Entries</title>
+    <meta charset="UTF-8" />
+    <title>DB</title>
     <style>
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
       }
-      th,
-      td {
-        border: 1px solid #ccc;
-        padding: 10px;
-        text-align: left;
+
+      .container {
+        width: 98%;
+        max-width: 1400px;
+        margin-top: 40px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
       }
-      th {
-        background-color: #f3f3f3;
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #222;
       }
+
       .nav {
+        text-align: center;
         margin-bottom: 20px;
       }
       .nav a {
-        margin-right: 20px;
-        font-size: 18px;
+        margin: 0 15px;
+        font-size: 16px;
+        font-weight: 600;
         text-decoration: none;
+        color: #222;
+        transition: color 0.3s;
+      }
+      .nav a:hover {
+        color: #555;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: center;
+        border-bottom: 1px solid #ccc;
+      }
+
+      th {
+        background-color: #e0e0e0;
+        font-weight: 600;
+        color: #222;
+      }
+
+      td.notes {
+        text-align: left;
+        max-width: 400px;
+        word-wrap: break-word;
+      }
+
+      td.status {
+        background-color: #ccc;
+        color: #000;
+        border-radius: 4px;
+        padding: 4px 8px;
+      }
+
+      .actions button {
+        margin: 0 3px;
+        padding: 5px 10px;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.2s;
+        background: #ccc;
+        color: #000;
+      }
+
+      .actions button:hover {
+        background: #bbb;
       }
     </style>
   </head>
   <body>
-    <div class="nav">
-      <a href="/">Journal</a>
-      <a href="/entries"><b>Entries</b></a>
+    <div class="container">
+      <div class="nav">
+        <a href="/">Journal</a>
+        <a href="/entries"><b>Entries</b></a>
+        <a href="/visualization">Visualization</a>
+      </div>
+
+      <h1>DB</h1>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Reading</th>
+            <th>Exercise</th>
+            <th>No Meat</th>
+            <th>Flossing</th>
+            <th>Health</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in entries %}
+          <tr>
+            <td>{{ entry.entry_date.strftime("%d.%m.%Y") }}</td>
+            <td class="status">{{ "✓" if entry.reading else "" }}</td>
+            <td class="status">{{ "✓" if entry.exercise else "" }}</td>
+            <td class="status">{{ entry.no_meat }}</td>
+            <td class="status">{{ "✓" if entry.flossing else "" }}</td>
+            <td class="status">{{ entry.health }}</td>
+            <td class="notes">{{ entry.notes }}</td>
+            <td class="actions">
+              <form
+                action="/edit/{{ entry.id }}"
+                method="get"
+                style="display: inline"
+              >
+                <button type="submit">Edit</button>
+              </form>
+              <form
+                action="/delete/{{ entry.id }}"
+                method="post"
+                style="display: inline"
+              >
+                <button
+                  type="submit"
+                  onclick="return confirm('Are you sure?');"
+                >
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
-    <h1>Letzte Einträge</h1>
-
-    <table>
-      <tr>
-        <th>ID</th>
-        <th>created_at</th>
-        <th>entry_date</th>
-        <th>Reading</th>
-        <th>Exercise</th>
-        <th>No Meat</th>
-        <th>Flossing</th>
-        <th>Health</th>
-        <th>Notes</th>
-      </tr>
-
-      {% for entry in entries %}
-      <tr>
-        <td>{{ entry.id }}</td>
-        <td>{{ entry.created_at }}</td>
-        <td>{{ entry.entry_date }}</td>
-        <td>{{ entry.reading }}</td>
-        <td>{{ entry.exercise }}</td>
-        <td>{{ entry.no_meat }}</td>
-        <td>{{ entry.flossing }}</td>
-        <td>{{ entry.health }}</td>
-        <td>{{ entry.notes }}</td>
-      </tr>
-      {% endfor %}
-    </table>
   </body>
 </html>

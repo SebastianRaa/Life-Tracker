@@ -2,7 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <title>Journal Eintrag</title>
+    <title>Edit Journal Entry</title>
     <style>
       /* Global Styles */
       body {
@@ -113,41 +113,83 @@
         <a href="/visualization">Visualization</a>
       </div>
 
-      <h1>Journaling</h1>
+      <h1>Edit Journal Entry</h1>
 
-      <form action="/submit" method="post">
+      <form action="/edit/{{ entry.id }}" method="post">
         <label for="entry_date">Date:</label>
-        <input type="date" id="date" name="entry_date" value="{{ today }}" />
+        <input
+          type="date"
+          id="entry_date"
+          name="entry_date"
+          value="{{ entry.entry_date.strftime('%Y-%m-%d') }}"
+        />
 
         <div class="checkbox-group">
-          <label><input type="checkbox" name="reading" /> Reading</label>
-          <label><input type="checkbox" name="exercise" /> Exercise</label>
-          <label><input type="checkbox" name="flossing" /> Flossing</label>
+          <label
+            ><input
+              type="checkbox"
+              name="reading"
+              {%
+              if
+              entry.reading
+              %}checked{%
+              endif
+              %}
+            />
+            Reading</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              name="exercise"
+              {%
+              if
+              entry.exercise
+              %}checked{%
+              endif
+              %}
+            />
+            Exercise</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              name="flossing"
+              {%
+              if
+              entry.flossing
+              %}checked{%
+              endif
+              %}
+            />
+            Flossing</label
+          >
         </div>
 
         <label>No meat:</label>
         <div class="radio-group">
-          <label><input type="radio" name="no_meat" value="0" /> 0</label>
-          <label><input type="radio" name="no_meat" value="1" /> 1</label>
-          <label><input type="radio" name="no_meat" value="2" /> 2</label>
-          <label><input type="radio" name="no_meat" value="3" /> 3</label>
+          {% for i in range(0,4) %}
+          <label
+            ><input type="radio" name="no_meat" value="{{ i }}" {% if
+            entry.no_meat == i %}checked{% endif %}/> {{ i }}</label
+          >
+          {% endfor %}
         </div>
 
         <label>Health:</label>
         <div class="radio-group">
-          <label><input type="radio" name="health" value="good" /> Good</label>
-          <label><input type="radio" name="health" value="ok" /> OK</label>
-          <label><input type="radio" name="health" value="bad" /> Bad</label>
+          {% for h in ['good','ok','bad'] %}
+          <label
+            ><input type="radio" name="health" value="{{ h }}" {% if
+            entry.health == h %}checked{% endif %}/> {{ h|capitalize }}</label
+          >
+          {% endfor %}
         </div>
 
         <label>Notes:</label>
-        <textarea
-          name="notes"
-          rows="4"
-          placeholder="Add your notes here..."
-        ></textarea>
+        <textarea name="notes" rows="4">{{ entry.notes }}</textarea>
 
-        <button type="submit">Submit</button>
+        <button type="submit">Save Changes</button>
       </form>
     </div>
   </body>

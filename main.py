@@ -30,11 +30,28 @@ def journal_form(request: Request):
 
 @app.get("/entries", response_class=HTMLResponse)
 def list_entries(request: Request, db: Session = Depends(get_db)):
-    entries = db.query(JournalEntry).order_by(JournalEntry.id.desc()).limit(50).all()
+    entries = db.query(JournalEntry).order_by(JournalEntry.entry_date.desc()).limit(50).all()
     return templates.TemplateResponse("entries.html", {
         "request": request,
         "entries": entries
     })
+
+@app.get("/edit/{entry_id}", response_class=HTMLResponse)
+def edit_entry_form(entry_id: int, request: Request, db: Session = Depends(get_db)):
+    entry = db.query(JournalEntry).get(entry_id)
+    if not entry:
+        return RedirectResponse("/entries", status_code=303)
+    return templates.TemplateResponse("edit_entry.html", {"request": request, "entry": entry})
+
+
+@app.get("/visualization", response_class=HTMLResponse)
+def visualize_entries(request: Request, db: Session = Depends(get_db)):
+    entries = db.query(JournalEntry).order_by(JournalEntry.entry_date.desc()).all()
+    return templates.TemplateResponse("visualization.html", {
+        "request": request,
+        "entries": entries
+    })
+
 
 @app.post("/submit")
 def submit(
@@ -57,3 +74,37 @@ def submit(
     db.commit()
 
     return RedirectResponse("/", status_code=303)
+
+
+@app.post("/edit/{entry_id}")
+def edit_entry_submit(entry_id: int, 
+                      entry_date: str = Form(...),
+                      reading: bool = Form(False),
+                      exercise: bool = Form(False),
+                      no_meat: int = Form(0),
+                      flossing: bool = Form(False),
+                      health: str = Form("good"),
+                      notes: str = Form(""),
+                      db: Session = Depends(get_db)):
+
+    entry = db.query(JournalEntry).get(entry_id)
+    if entry:
+        entry.entry_date = datetime.strptime(entry_date, "%Y-%m-%d")
+        entry.reading = reading
+        entry.exercise = exercise
+        entry.no_meat = no_meat
+        entry.flossing = flossing
+        entry.health = health
+        entry.notes = notes
+        db.commit()
+
+    return RedirectResponse("/entries", status_code=303)
+
+
+@app.post("/delete/{entry_id}")
+def delete_entry(entry_id: int, db: Session = Depends(get_db)):
+    entry = db.query(JournalEntry).get(entry_id)
+    if entry:
+        db.delete(entry)
+        db.commit()
+    return RedirectResponse("/entries", status_code=303)

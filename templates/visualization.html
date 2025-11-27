@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Journal Visualization</title>
+    <style>
+      .nav {
+        margin-bottom: 20px;
+      }
+      .nav a {
+        margin-right: 20px;
+        font-size: 18px;
+        text-decoration: none;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 6px;
+        text-align: center;
+      }
+      .yes {
+        background-color: #4caf50;
+        color: white;
+      }
+      .no {
+        background-color: #f44336;
+        color: white;
+      }
+      .neutral {
+        background-color: #f0f0f0;
+      }
+      .health-good {
+        background-color: #4caf50;
+        color: white;
+      }
+      .health-ok {
+        background-color: #ffc107;
+        color: black;
+      }
+      .health-bad {
+        background-color: #f44336;
+        color: white;
+      }
+      td.notes {
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <a href="/">Journal</a>
+      <a href="/entries">Entries</a>
+      <a href="/visualization"><b>Visualization</b></a>
+    </div>
+    <h1>Journal Entries</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Tag</th>
+          <th>Reading</th>
+          <th>Exercise</th>
+          <th>No Meat</th>
+          <th>Flossing</th>
+          <th>Health</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in entries %}
+        <tr>
+          <td>{{ entry.entry_date.strftime("%d.%m.%Y") }}</td>
+          <td class="{{ 'yes' if entry.reading else 'no' }}"></td>
+          <td class="{{ 'yes' if entry.exercise else 'no' }}"></td>
+          <td class="neutral">{{ entry.no_meat }}</td>
+          <td class="{{ 'yes' if entry.flossing else 'no' }}"></td>
+          <td
+            class="{% if entry.health.lower() == 'good' %}health-good {% elif entry.health.lower() == 'ok' %}health-ok {% else %}health-bad{% endif %}"
+          >
+            {{ entry.health }}
+          </td>
+          <td class="notes">{{ entry.notes }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>
