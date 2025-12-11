@@ -4,88 +4,154 @@
     <meta charset="UTF-8" />
     <title>Journal Visualization</title>
     <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f0f2f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 98%;
+        max-width: 1400px;
+        margin-top: 40px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+
       .nav {
         margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .nav {
+        text-align: center;
+        margin-bottom: 30px;
       }
       .nav a {
-        margin-right: 20px;
+        margin: 0 15px;
         font-size: 18px;
         text-decoration: none;
+        color: #333;
+        font-weight: 600;
+        transition: color 0.3s;
       }
+      .nav a:hover {
+        color: #4caf50;
+      }
+
+      .month-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 20px;
+      }
+
+      .month-nav a {
+        padding: 8px 14px;
+        background: #e0e0e0;
+        border-radius: 6px;
+        text-decoration: none;
+        color: black;
+      }
+
+      .month-nav a:hover {
+        background: #d0d0d0;
+      }
+
       table {
         border-collapse: collapse;
         width: 100%;
       }
+
       th,
       td {
         border: 1px solid #ccc;
         padding: 6px;
         text-align: center;
       }
+
       .yes {
-        background-color: #4caf50;
-        color: white;
+        background-color: #0dff00;
       }
       .no {
-        background-color: #f44336;
-        color: white;
-      }
-      .neutral {
-        background-color: #f0f0f0;
-      }
-      .health-good {
-        background-color: #4caf50;
-        color: white;
+        background-color: #ffffff;
       }
       .health-ok {
-        background-color: #ffc107;
-        color: black;
+        background-color: #ff8080;
       }
       .health-bad {
-        background-color: #f44336;
-        color: white;
+        background-color: #ff1414;
       }
+
       td.notes {
         text-align: left;
       }
     </style>
   </head>
+
   <body>
-    <div class="nav">
-      <a href="/">Journal</a>
-      <a href="/entries">Entries</a>
-      <a href="/visualization"><b>Visualization</b></a>
+    <div class="container">
+      <div class="nav">
+        <a href="/">Journal</a>
+        <a href="/entries">Entries</a>
+        <a href="/visualization"><b>Visualization</b></a>
+      </div>
+
+      <h1 style="text-align: center">
+        {{ current_month }} / {{ current_year }}
+      </h1>
+
+      <div class="month-nav">
+        <a href="/visualization?year={{ prev_year }}&month={{ prev_month }}">
+          ← {{ prev_month }} / {{ prev_year }}
+        </a>
+
+        <a href="/visualization?year={{ next_year }}&month={{ next_month }}">
+          {{ next_month }} / {{ next_year }} →
+        </a>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Tag</th>
+            <th>Reading</th>
+            <th>Exercise</th>
+            <th>No Meat</th>
+            <th>Flossing</th>
+            <th>Health</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in entries %}
+          <tr>
+            <td>{{ entry.entry_date.strftime("%d.%m.%Y") }}</td>
+            <td class="{{ 'yes' if entry.reading else 'no' }}"></td>
+            <td class="{{ 'yes' if entry.exercise else 'no' }}"></td>
+            <td class="{{ 'yes' if entry.no_meat == 0 else 'no' }}">
+              {{ entry.no_meat }}
+            </td>
+            <td class="{{ 'yes' if entry.flossing else 'no' }}"></td>
+
+            <td
+              class="{% if entry.health.lower() == 'good' %}no {% elif entry.health.lower() == 'ok' %}health-ok {% else %}health-bad {% endif %}"
+            >
+              {{ entry.health }}
+            </td>
+
+            <td class="notes">{{ entry.notes }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-    <h1>Journal Entries</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>Tag</th>
-          <th>Reading</th>
-          <th>Exercise</th>
-          <th>No Meat</th>
-          <th>Flossing</th>
-          <th>Health</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for entry in entries %}
-        <tr>
-          <td>{{ entry.entry_date.strftime("%d.%m.%Y") }}</td>
-          <td class="{{ 'yes' if entry.reading else 'no' }}"></td>
-          <td class="{{ 'yes' if entry.exercise else 'no' }}"></td>
-          <td class="neutral">{{ entry.no_meat }}</td>
-          <td class="{{ 'yes' if entry.flossing else 'no' }}"></td>
-          <td
-            class="{% if entry.health.lower() == 'good' %}health-good {% elif entry.health.lower() == 'ok' %}health-ok {% else %}health-bad{% endif %}"
-          >
-            {{ entry.health }}
-          </td>
-          <td class="notes">{{ entry.notes }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
   </body>
 </html>

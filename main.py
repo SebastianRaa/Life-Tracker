@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from datetime import date,datetime
+from datetime import date,datetime,timedelta
 
 from database import Base, engine, SessionLocal
 from models import JournalEntry
@@ -44,13 +44,52 @@ def edit_entry_form(entry_id: int, request: Request, db: Session = Depends(get_d
     return templates.TemplateResponse("edit_entry.html", {"request": request, "entry": entry})
 
 
-@app.get("/visualization", response_class=HTMLResponse)
-def visualize_entries(request: Request, db: Session = Depends(get_db)):
-    entries = db.query(JournalEntry).order_by(JournalEntry.entry_date.desc()).all()
-    return templates.TemplateResponse("visualization.html", {
-        "request": request,
-        "entries": entries
-    })
+@app.get("/visualization")
+def visualization(request: Request, year: int = None, month: int = None, db: Session = Depends(get_db)):
+    # Standard: aktueller Monat
+    today = date.today()
+    if year is None:
+        year = today.year
+    if month is None:
+        month = today.month
+
+    # Start / Ende
+    start_date = date(year, month, 1)
+    if month == 12:
+        next_month_date = date(year + 1, 1, 1)
+    else:
+        next_month_date = date(year, month + 1, 1)
+    end_date = next_month_date - timedelta(days=1)
+
+    # Query
+    entries = (
+        db.query(JournalEntry)
+        .filter(JournalEntry.entry_date >= start_date)
+        .filter(JournalEntry.entry_date <= end_date)
+        .order_by(JournalEntry.entry_date.asc())
+        .all()
+    )
+
+    # Navigationsdaten
+    prev_year = year - 1 if month == 1 else year
+    prev_month = 12 if month == 1 else month - 1
+
+    next_year = year + 1 if month == 12 else year
+    next_month = 1 if month == 12 else month + 1
+
+    return templates.TemplateResponse(
+        "visualization.html",
+        {
+            "request": request,
+            "entries": entries,
+            "current_year": year,
+            "current_month": month,
+            "prev_year": prev_year,
+            "prev_month": prev_month,
+            "next_year": next_year,
+            "next_month": next_month,
+        }
+    )
 
 
 @app.post("/submit")
